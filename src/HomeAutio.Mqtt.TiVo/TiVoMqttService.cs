@@ -4,6 +4,7 @@ using HomeAutio.Mqtt.Core;
 using I8Beef.TiVo;
 using I8Beef.TiVo.Commands;
 using I8Beef.TiVo.Events;
+using I8Beef.TiVo.Responses;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 
@@ -87,19 +88,45 @@ namespace HomeAutio.Mqtt.TiVo
 
             Command command = null;
             if (commandType == "setCh")
-                command = new SetChCommand { Value = message };
+            {
+                var messageParts = message.Split('.');
+                if (int.TryParse(messageParts[0], out int channel))
+                {
+                    if (messageParts.Length == 1)
+                    {
+                        command = new SetChCommand { Channel = channel };
+                    }
+                    else if (messageParts.Length == 2 && int.TryParse(messageParts[0], out int subchannel))
+                    {
+                        command = new SetChCommand { Channel = channel, Subchannel = subchannel };
+                    }
+                }
+            }
 
             if (commandType == "forceCh")
-                command = new ForceChCommand { Value = message };
+            {
+                var messageParts = message.Split('.');
+                if (int.TryParse(messageParts[0], out int channel))
+                {
+                    if (messageParts.Length == 1)
+                    {
+                        command = new ForceChCommand { Channel = channel };
+                    }
+                    else if (messageParts.Length == 2 && int.TryParse(messageParts[0], out int subchannel))
+                    {
+                        command = new ForceChCommand { Channel = channel, Subchannel = subchannel };
+                    }
+                }
+            }
 
             if (commandType == "irCode")
-                command = new IrCommand { Value = message };
+                command = new IrCommand { IrCode = message };
 
             if (commandType == "teleport")
-                command = new TeleportCommand { Value = message };
+                command = new TeleportCommand { TeleportCode = message };
 
             if (commandType == "keyboard")
-                command = new KeyboardCommand { Value = message };
+                command = new KeyboardCommand { KeyboardCode = message };
 
             if (command != null)
             {
@@ -123,9 +150,10 @@ namespace HomeAutio.Mqtt.TiVo
 
             if (e.Response.GetType().Name == "ChannelStatusResponse")
             {
+                var channelStatusResponse = e.Response as ChannelStatusResponse;
                 await MqttClient.PublishAsync(new MqttApplicationMessageBuilder()
                         .WithTopic(TopicRoot + "/currentChannel")
-                        .WithPayload(e.Response.Value)
+                        .WithPayload(channelStatusResponse.Channel + (channelStatusResponse.Subchannel.HasValue ? $".{channelStatusResponse.Subchannel.Value}" : string.Empty))
                         .WithAtLeastOnceQoS()
                         .WithRetainFlag()
                         .Build())
