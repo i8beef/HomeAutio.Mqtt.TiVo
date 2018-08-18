@@ -18,7 +18,7 @@ namespace HomeAutio.Mqtt.TiVo
         private ILogger<TiVoMqttService> _log;
         private bool _disposed = false;
 
-        private Client _client;
+        private IClient _client;
         private string _tivoName;
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace HomeAutio.Mqtt.TiVo
         /// <param name="brokerSettings">MQTT broker settings.</param>
         public TiVoMqttService(
             ILogger<TiVoMqttService> logger,
-            Client tivoClient,
+            IClient tivoClient,
             string tivoName,
             BrokerSettings brokerSettings)
             : base(logger, brokerSettings, "tivo/" + tivoName)

@@ -75,7 +75,7 @@ namespace HomeAutio.Mqtt.TiVo
                 .ConfigureServices((hostContext, services) =>
                 {
                     // Setup client
-                    services.AddScoped<Client>(serviceProvider => new Client(config.GetValue<string>("tivo:tivoHost")));
+                    services.AddScoped<IClient>(serviceProvider => new Client(config.GetValue<string>("tivo:tivoHost")));
 
                     // Setup service instance
                     services.AddScoped<IHostedService, TiVoMqttService>(serviceProvider =>
@@ -90,7 +90,7 @@ namespace HomeAutio.Mqtt.TiVo
 
                         return new TiVoMqttService(
                             serviceProvider.GetRequiredService<ILogger<TiVoMqttService>>(),
-                            serviceProvider.GetRequiredService<Client>(),
+                            serviceProvider.GetRequiredService<IClient>(),
                             config.GetValue<string>("tivo:tivoName"),
                             brokerSettings);
                     });
