@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HomeAutio.Mqtt.Core" Version="3.0.0.41" />
+    <PackageReference Include="HomeAutio.Mqtt.Core" Version="3.0.0.43" />
     <PackageReference Include="I8Beef.CodeAnalysis.RuleSet" Version="1.0.15" />
     <PackageReference Include="I8Beef.TiVo" Version="1.0.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
