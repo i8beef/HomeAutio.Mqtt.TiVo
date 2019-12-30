@@ -7,6 +7,7 @@ using I8Beef.TiVo.Events;
 using I8Beef.TiVo.Responses;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
+using MQTTnet.Extensions.ManagedClient;
 
 namespace HomeAutio.Mqtt.TiVo
 {
@@ -15,11 +16,9 @@ namespace HomeAutio.Mqtt.TiVo
     /// </summary>
     public class TiVoMqttService : ServiceBase
     {
-        private ILogger<TiVoMqttService> _log;
+        private readonly ILogger<TiVoMqttService> _log;
+        private readonly IClient _client;
         private bool _disposed = false;
-
-        private IClient _client;
-        private string _tivoName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TiVoMqttService"/> class.
@@ -39,8 +38,6 @@ namespace HomeAutio.Mqtt.TiVo
             SubscribedTopics.Add(TopicRoot + "/controls/+/set");
 
             _client = tivoClient;
-            _tivoName = tivoName;
-
             _client.EventReceived += TiVo_EventReceived;
 
             // TiVo client logging
@@ -57,7 +54,7 @@ namespace HomeAutio.Mqtt.TiVo
         #region Service implementation
 
         /// <inheritdoc />
-        protected override Task StartServiceAsync(CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task StartServiceAsync(CancellationToken cancellationToken = default)
         {
             _client.Connect();
 
@@ -65,7 +62,7 @@ namespace HomeAutio.Mqtt.TiVo
         }
 
         /// <inheritdoc />
-        protected override Task StopServiceAsync(CancellationToken cancellationToken = default(CancellationToken))
+        protected override Task StopServiceAsync(CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -77,9 +74,8 @@ namespace HomeAutio.Mqtt.TiVo
         /// <summary>
         /// Handles commands for the TiVo published to MQTT.
         /// </summary>
-        /// <param name="sender">Event sender.</param>
         /// <param name="e">Event args.</param>
-        protected override async void Mqtt_MqttMsgPublishReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
+        protected override async void Mqtt_MqttMsgPublishReceived(MqttApplicationMessageReceivedEventArgs e)
         {
             var message = e.ApplicationMessage.ConvertPayloadToString();
             _log.LogInformation("MQTT message received for topic " + e.ApplicationMessage.Topic + ": " + message);
