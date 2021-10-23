@@ -1,4 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/tsaqo6nh93up0tpe/branch/master?svg=true)](https://ci.appveyor.com/project/i8beef/homeautio-mqtt-tivo/branch/master)
+![Build](https://github.com/i8beef/HomeAutio.Mqtt.TiVo/actions/workflows/build.yml/badge.svg?branch=master)
+![Release](https://github.com/i8beef/HomeAutio.Mqtt.TiVo/actions/workflows/release.yml/badge.svg)
 
 # HomeAutio.Mqtt.TiVo
 HomeAutio TiVo MQTT Bridge
